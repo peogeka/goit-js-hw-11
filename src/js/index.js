@@ -4,6 +4,11 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import 'intersection-observer'; 
 
+let lightBox = new SimpleLightbox('.photo-card a', {
+  captions: true,
+  captionsData: 'alt',
+  captionsDelay: 250,
+});
 
 const state = {
   currentPage: 1,
@@ -19,10 +24,10 @@ searchForm.addEventListener('submit', onSubmitForm);
 
 async function onSubmitForm(event) {
   event.preventDefault();
+ try {
   const searchQuery = getSearchQueryFromForm();
-
   
-   state.currentPage = 1;
+  state.currentPage = 1;
 
   const images = await fetchImages(searchQuery, state.currentPage);
   displayGallery(images);
@@ -32,6 +37,9 @@ async function onSubmitForm(event) {
   if (images.length === 0) {
     showNoResultsMessage();
   }
+} catch (error) {
+  console.error('Something went wrong:', error);
+}
 }
 
 
@@ -51,6 +59,7 @@ function addIntersectionObserver() {
 
 
 async function onIntersection(entries, observer) {
+  try {
   if (state.isLoading || entries[0].intersectionRatio <= 0) return;
 
   state.isLoading = true;
@@ -64,6 +73,10 @@ async function onIntersection(entries, observer) {
     observer.disconnect(); 
     showEndOfResultsMessage();
   }
+} catch (error) {
+  console.error('Something went wrong:', error);
+  
+}
 
   state.isLoading = false;
 }
@@ -79,7 +92,7 @@ function displayGallery(images) {
   };
 
  
-  const lightbox = new SimpleLightbox('.gallery a', lightboxOptions);
+  lightBox.refresh();
 }
 
 
@@ -100,9 +113,7 @@ function appendGalleryMarkup(images) {
   });
 
   
-  const lightbox = new SimpleLightbox(newImageLinks, {
-   
-  });
+   lightBox.refresh();
 }
 
 
@@ -131,15 +142,14 @@ function getSearchQueryFromForm() {
 }
 
 
-function showNoResultsMessage() {
-  Notiflix.Notify.failure(
-    'Sorry, there are no images matching your search query. Please try again.'
-  );
+function showMessage(messageText) {
+  Notiflix.Notify.failure(messageText);
 }
 
 
-function showEndOfResultsMessage() {
-  Notiflix.Notify.info(
-    "We're sorry, but you've reached the end of search results."
-  );
-};
+const noResultsMessage = "Sorry, there are no images matching your search query. Please try again.";
+const endOfResultsMessage = "We're sorry, but you've reached the end of search results.";
+
+
+showMessage(noResultsMessage);
+showMessage(endOfResultsMessage);

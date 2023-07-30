@@ -20,7 +20,7 @@ export async function fetchImages(searchQuery, page) {
 
     return response.data.hits;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    
     return [];
   }
 }
