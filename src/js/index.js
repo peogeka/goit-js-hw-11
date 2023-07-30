@@ -4,8 +4,11 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import 'intersection-observer'; 
 
-let currentPage = 1;
-let isLoading = false;
+
+const state = {
+  currentPage: 1,
+  isLoading: false,
+};
 
 const searchForm = document.getElementById('search-form');
 const galleryContainer = document.querySelector('.gallery');
@@ -19,11 +22,11 @@ async function onSubmitForm(event) {
   const searchQuery = getSearchQueryFromForm();
 
   
-  currentPage = 1;
+   state.currentPage = 1;
 
-  const images = await fetchImages(searchQuery, currentPage);
+  const images = await fetchImages(searchQuery, state.currentPage);
   displayGallery(images);
-  currentPage++;
+  state.currentPage++;
   addIntersectionObserver(); 
 
   if (images.length === 0) {
@@ -48,21 +51,21 @@ function addIntersectionObserver() {
 
 
 async function onIntersection(entries, observer) {
-  if (isLoading || entries[0].intersectionRatio <= 0) return;
+  if (state.isLoading || entries[0].intersectionRatio <= 0) return;
 
-  isLoading = true;
+  state.isLoading = true;
   const searchQuery = getSearchQueryFromForm();
-  const images = await fetchImages(searchQuery, currentPage);
+  const images = await fetchImages(searchQuery, state.currentPage);
 
   if (images.length > 0) {
     appendGalleryMarkup(images);
-    currentPage++;
+    state.currentPage++;
   } else {
     observer.disconnect(); 
     showEndOfResultsMessage();
   }
 
-  isLoading = false;
+  state.isLoading = false;
 }
 
 
@@ -107,7 +110,7 @@ function createGalleryMarkup(images) {
   return images
     .map(
       image => `
-    <a href="${image.webformatURL}" class="photo-card"> <!-- Обгортаємо картку зображення у посилання -->
+    <a href="${image.webformatURL}" class="photo-card"> 
       <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
       <div class="info">
         <p class="info-item"><b>Likes:</b> ${image.likes}</p>
