@@ -1,7 +1,6 @@
 import { fetchImages } from './api.js';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
-
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import 'intersection-observer'; 
 
@@ -140,4 +139,4 @@ function showEndOfResultsMessage() {
   Notiflix.Notify.info(
     "We're sorry, but you've reached the end of search results."
   );
-}
+};
